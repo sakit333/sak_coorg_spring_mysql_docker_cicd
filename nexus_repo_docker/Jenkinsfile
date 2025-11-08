@@ -33,6 +33,8 @@ pipeline {
             steps {
                 echo "❌ Removing Nexus Repository container and volume..."
                 sh 'sudo docker-compose -f ${COMPOSE_FILE} down -v'
+                sh 'sudo docker rmi -f sonatype/nexus3 || echo "Nexus image not found, skipping..."'
+                sh 'sudo docker rmi -f nexus_repo_docker_nexus || echo "Nexus custom image not found, skipping..."'
             }
         }
         stage('Show Nexus Status') {
