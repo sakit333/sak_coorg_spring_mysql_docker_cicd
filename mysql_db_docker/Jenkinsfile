@@ -4,7 +4,7 @@ pipeline {
         choice(name: 'ACTION', choices: ['start', 'stop', 'terminate'], description: 'Choose what to do with the MySQL container')
     }
     environment {
-        COMPOSE_FILE = 'docker-compose.yml'
+        COMPOSE_FILE = 'mysql_db_docker/docker-compose.yml'
     }
     stages {
         stage('Build MySQL Image') {
