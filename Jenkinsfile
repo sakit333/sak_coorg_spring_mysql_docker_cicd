@@ -111,7 +111,21 @@ pipeline {
             }
             steps {
                 echo "Deploying to the Dev Environment....!!!!"
-                sh 'sudo docker run -d --name spring_app_container --network mysql-network -p 8088:8088 ${DOCKERHUB_USERNAME}/${DOCKER_IMAGE}:latest'
+                sh '''
+                NETWORK_NAME="mysql_db_docker_mysql-network"
+
+                # Check if the network exists; if not, create it
+                if sudo docker network inspect "$NETWORK_NAME" >/dev/null 2>&1; then
+                echo "Network '$NETWORK_NAME' exists. Attaching container to it..."
+                else
+                echo "Network '$NETWORK_NAME' not found. Creating it now..."
+                sudo docker network create "$NETWORK_NAME"
+                echo "Network '$NETWORK_NAME' created successfully."
+                fi
+
+                # Run the container attached to the network
+                sudo docker run -d --name spring_app_container --network "$NETWORK_NAME" -p 8088:8088 ${DOCKERHUB_USERNAME}/${DOCKER_IMAGE}:latest
+                '''
             }
         }
         stage('Remove the container from Dev Environment') {
