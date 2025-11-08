@@ -45,7 +45,26 @@ pipeline {
                 sh "sudo docker-compose -f ${COMPOSE_FILE} up -d nexus"
             }
         }
+        stage('Get the admin password for Nexus') {
+            when { expression { params.ACTION == 'start' } }
+            steps {
+                script {
+                    echo "🔐 Retrieving Nexus admin password..."
+                    def containerId = sh(script: "sudo docker ps -qf 'name=nexus-repo'", returnStdout: true).trim()
+                    def adminPassword = sh(
+                        script: "sudo docker exec ${containerId} cat /nexus-data/admin.password 2>/dev/null || echo 'Password file not found'",
+                        returnStdout: true
+                    ).trim()
+                    echo "\n================ Nexus Admin Credentials ================"
+                    echo "🌐 URL: http://<your-server-ip>:8081"
+                    echo "👤 Username: admin"
+                    echo "🔑 Password: ${adminPassword}"
+                    echo "==========================================================\n"
 
+                    input message: "📋 Copy the above password and click 'Proceed' when ready."
+                }
+            }
+        }
         stage('Stop Nexus Container') {
             when { expression { params.ACTION == 'stop' } }
             steps {
