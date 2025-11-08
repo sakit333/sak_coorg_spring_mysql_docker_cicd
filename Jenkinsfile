@@ -129,7 +129,7 @@ pipeline {
                 '''
             }
         }
-        stage('Remove the docker images') {
+        stage('Remove the Docker Images') {
             when {
                 allOf {
                     expression { params.DEPLOY_ENV == 'dev' }
@@ -137,10 +137,24 @@ pipeline {
                 }
             }
             steps {
-                echo "Removing all the images Locally....!!!!"
+                echo "🧹 Removing all Docker images locally..."
                 sh '''
-                sudo docker rmi -f ${DOCKERHUB_USERNAME}/${DOCKER_IMAGE}:latest || echo "Image not found, skipping..."
-                sudo docker rmi -f eclipse-temurin:17-jdk-alpine || echo "Image not found, skipping..."
+                echo "🔍 Searching for all tags of ${DOCKERHUB_USERNAME}/${DOCKER_IMAGE}..."
+
+                # Remove all tags of the app image
+                IMAGES=$(sudo docker images "${DOCKERHUB_USERNAME}/${DOCKER_IMAGE}" --format "{{.Repository}}:{{.Tag}}")
+
+                if [ -n "$IMAGES" ]; then
+                echo "🗑️  Removing the following images:"
+                echo "$IMAGES"
+                echo "$IMAGES" | xargs -r sudo docker rmi -f
+                else
+                echo "⚠️  No images found for ${DOCKERHUB_USERNAME}/${DOCKER_IMAGE}, skipping..."
+                fi
+
+                # Remove base image if present
+                echo "🗑️  Removing base image eclipse-temurin:17-jdk-alpine (if exists)..."
+                sudo docker rmi -f eclipse-temurin:17-jdk-alpine || echo "⚠️  Base image not found, skipping..."
                 '''
             }
         }
