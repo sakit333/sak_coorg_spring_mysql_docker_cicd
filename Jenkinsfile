@@ -88,7 +88,6 @@ pipeline {
                 sh '''
                 sudo docker rmi ${DOCKERHUB_USERNAME}/${DOCKER_IMAGE}:${DOCKER_VERSION_TAG} || echo "Image not found, skipping..."
                 sudo docker rmi ${DOCKERHUB_USERNAME}/${DOCKER_IMAGE}:latest || echo "Image not found, skipping..."
-                sudo docker system prune -af
                 '''
             }
         }
@@ -141,7 +140,6 @@ pipeline {
                 echo "Removing all the images Locally....!!!!"
                 sh '''
                 sudo docker rmi ${DOCKERHUB_USERNAME}/${DOCKER_IMAGE}:latest || echo "Image not found, skipping..."
-                sudo docker system prune -af
                 '''
             }
         }

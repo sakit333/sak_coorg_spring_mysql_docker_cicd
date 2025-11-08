@@ -1,6 +1,6 @@
 FROM mysql:8.0
 
-LABEL maintainer="yourname@example.com"
+LABEL maintainer="sakit333"
 LABEL description="Custom MySQL 8.0 container with remote access"
 
 ENV MYSQL_ROOT_PASSWORD=1234
